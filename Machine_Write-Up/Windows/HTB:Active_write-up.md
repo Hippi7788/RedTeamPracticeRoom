@@ -146,7 +146,9 @@ gpp-decrypt 'edBS....'
 
 <img width="557" height="384" alt="螢幕擷取畫面 2026-04-04 185703" src="https://github.com/user-attachments/assets/8002d943-3a42-4ca0-aea2-748565e28069" />
 
+
 <img width="304" height="79" alt="螢幕擷取畫面 2026-04-04 185712" src="https://github.com/user-attachments/assets/a0483240-f004-400b-aa90-d6ce07100483" />
+
 
 ### 2.4 權限提升(Privilege Escalation)
 
