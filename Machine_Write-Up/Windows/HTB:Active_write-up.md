@@ -1,8 +1,8 @@
 ## 1. 執行摘要 (Executive Summary)
 
 ### 測試範圍與目標：
-1. 靶機名稱:Netmon
-2. 難度:
+1. 靶機名稱:Active
+2. 難度:Easy
 3. IP:
 
 ### 主要發現：
