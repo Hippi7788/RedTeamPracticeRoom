@@ -266,7 +266,7 @@ Add-DomainObjectAcl -TargetIdentity "DC=htb,DC=local" -PrincipalIdentity "svc-al
 
 <img width="1348" height="82" alt="螢幕擷取畫面 2026-04-06 003419" src="https://github.com/user-attachments/assets/c6054d85-d556-4968-a9ea-cb16755be218" />
 
-使用impacket-secretdump擷取哈希，這個工具會產生大量的SMB流量，隱蔽性來說不如BloodyAD，我的首選是BloodyAD，這次是練習用impacket包
+使用impacket-secretdump擷取哈希，注意這個工具會產生大量的SMB流量
 
 攻擊前做時間同步已經養成習慣，這裡不另外演示
 
