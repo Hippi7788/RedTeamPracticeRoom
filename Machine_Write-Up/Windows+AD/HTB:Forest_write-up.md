@@ -3,17 +3,34 @@
 ### 測試範圍與目標：
 1. 靶機名稱:Forest
 2. 難度:Easy
-3. IP:
+3. IP:10.129.95.210
 
 ### 主要發現：
-1. 漏洞 ：（風險等級：）
-2. 漏洞 ：（風險等級：）
+1. 漏洞 ：透過RPC協議匿名訪問獲得內部使用者資訊（風險等級：High）
+2. 漏洞 ：透過AD權限配置錯誤與不安全帳號策略導致管理員憑證外洩（風險等級：Critical）
 
 ### 攻擊鏈摘要：
 
+透過違反最小原則的RPC協議匿名枚舉出網域內的使用者帳號，其中包含未開啟Kerberos預先驗證的使用者，可針對該使用者離線破解獲得有效的使用者憑證，並成功入侵內網。外洩的使用者所屬群組對Exchange Windows Permissions群組有GenericALL權限，並且Exchange Windows Permissions對DC有WriteDacl權限，攻擊者透過修改DACL賦予自身DS-Replication-Get-Changes-All權限，隨後執行DCSync攻擊，提取Administrator雜湊，完全接管網域。
+
+
 ### 潛在影響：
 
+1. 允許匿名登入的RPC協議違反最小原則，導致內網資料外洩。
+2. 使用者未開啟Kerberos預先驗證將導致憑證外洩、內網被侵入及內部資料外洩。
+3. 群組權限配置錯誤導致管理員憑證外洩、網域被全面接管。
+4. 藉由控制DC，攻擊者可持久化控制。
+
+
 ### 修復建議：
+
+1. 限制RPC協議的匿名列舉功能，修改登錄檔RestrictAnonymous設定。
+2. 對所有帳號強制啟用需要Kerberos預先驗證。
+3. 定期要求更換強密碼，以抵抗離線破解攻擊。
+4. 重新審核Exchange Windows Permissions群組的高權限。
+5. 清理巢狀群組結構，移除不必要的GenericALL權限分配。
+6. 監控網域控制器上的複寫請求動作（如DS-Replication-Get-Changes-All），以及異常的WriteDacl變更行為。
+
 
 ---
 
