@@ -112,7 +112,7 @@ rpcclient -U "" -N 10.129.95.210
 
 切記，在做Kerberos相關攻擊前必須做時間同步，這裡不展示
 
-AS-REP Roasting：當使用者帳號被設置「不需要Kerberos預身分驗證(Do not require Kerberos Pre-Authentication)」時，攻擊者可偽造請求，DC不會驗證身分，直接返回AS-REP數據包，數據包裡含使用者的密碼哈希，可背離線破解
+AS-REP Roasting：當使用者帳號被設置「不需要Kerberos預身分驗證(Do not require Kerberos Pre-Authentication)」時，攻擊者可偽造請求，DC不會驗證身分，直接返回AS-REP數據包，數據包裡含使用者的密碼哈希，可被離線破解
 
 ```bash
 impacket-GetNPUsers htb.local/ -userfile users -format hashcat -no-pass -dc-ip 10.129.95.210 -outputfile asrep_hash
