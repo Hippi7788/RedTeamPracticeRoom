@@ -1,5 +1,6 @@
 ltrace 與 strace 的主要區別在於它們監控的程式層級不同：
-核心差異比較
+
+
 
 * 監控對象
 * strace: 追蹤進程執行的系統呼叫 (System Calls)。這是應用程式與作業系統核心 (Kernel) 之間的溝通行為，例如讀取檔案 (read)、開啟網路連線 (connect)。
