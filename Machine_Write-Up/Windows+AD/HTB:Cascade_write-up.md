@@ -255,7 +255,7 @@ monodis --userstrings CascAudit.exe
 
 <img width="1200" height="268" alt="螢幕擷取畫面 2026-04-13 225518" src="https://github.com/user-attachments/assets/b4d872b4-e9cf-427c-a34b-d6efb293f76c" />
 
-【注意，實戰時請直接使用dnSpy或ILSpy反編譯，這裡展示的硬編碼是非常嚴重的資安問題，一般不太會有這種事，通常是C#中會有個邏輯，這個邏輯會告訴我KEY怎麼來的，然後再去挖那個來源，例如說環境變數或什麼設備或服務生成再導入的，硬編碼最近只有在AI寫的程式中會有這種問題，所以直接用dnSpy或ILSpy看精美的C#比較清楚】
+【注意，實戰時請直接使用dnSpy或ILSpy反編譯，這裡展示的硬編碼是非常嚴重的資安問題，一般不太會有這種事，通常是C#中會有個邏輯，這個邏輯會告訴我KEY怎麼來的，然後再去挖那個來源，例如說環境變數或什麼設備或服務生成再導入的，硬編碼最近只有在AI寫的程式中會有，所以直接用dnSpy或ILSpy看精美的C#比較清楚】
 
 ### 2.5 權限提升(Privilege Escalation)
 
@@ -304,6 +304,20 @@ Get-ADObject -filter { SAMAccountName -eq "TempAdmin" } -includeDeletedObjects -
 ## 3. 學習回顧 (Lessons Learned)
 
 ### 成功的部分：
+
+1. 相對來說繞了一點，需要兩次解密，確實有點Medium的難度，SMB憑證、初次存取憑證、橫向移動憑證、被刪除憑證和管理員憑證，最好每次獲得憑證就存成文件管理。
+2. 成功練習monodis，這是難得的機會。
+
 ### 浪費時間的部分：
+
+1. 並沒有特別卡住的地方，只有練習monodis時花了一點時間了解。
+
 ### 新知識點：
+
+1. 關於VNC解密的方法
+2. 關於monodis的使用方法
+
 ### 與實戰對應：
+
+1. 再次強調，實戰時請直接使用dnSpy或ILSpy反編譯。
+
