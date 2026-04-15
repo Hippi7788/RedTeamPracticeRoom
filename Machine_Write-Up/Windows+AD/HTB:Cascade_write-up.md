@@ -39,6 +39,10 @@
 ### 2.1 資訊蒐集(Reconnaissance)
 
 使用Nmap掃描開放埠，除了AD環境預設開放的以外並未有特殊服務
+1. 用穩定的TCP協議進行全掃描，這步需要完整性，不能有漏，最低速率要參考網速，可以先ping靶機測試
+2. 針對UDP協議掃描，只掃前20個常用埠就行
+3. 詳細訊息掃描，探測服務版本、使用默認腳本並且掃描作業系統
+4. 用漏洞腳本進行掃描，基本上AD環境不會有什麼結果，但還是要做，不能放棄可能有的攻擊面
 
 ```bash
 sudo nmap -sT -Pn --min-rate 800 -p- 10.129.211.241 -oA portscan/ports
@@ -60,7 +64,11 @@ sudo nmap --script=vuln -p$ports 10.129.211.241 -oA portscan/vuln
 
 <img width="513" height="260" alt="螢幕擷取畫面 2026-04-13 205046" src="https://github.com/user-attachments/assets/98676fa8-26c6-47bc-8e94-0cc0bc52b82e" />
 
-使用ntpdate做時間同步，關於時間同步的細節我放在tips中
+在紅隊視角中，時間偏差問題常常成為AD滲透或橫向移動中的隱形障礙，尤其是利用Kerberos或NTLM等需要用到時間戳的協議的時候，一旦目標機器和攻擊機有時間偏差，就會導致驗證失敗或在系統中留下異常日誌。因為Windows對於這種協議的時間偏差只有很小的容忍範圍，通常在五分鐘左右。
+
+ntpdate走NTP(Network Time Protocol)協議，123 UDP port，不太會留下系統日誌或被管理員注意到，但若UDP123沒開放則無法使用。
+
+還有net命令中的時間調整(time set)命令可做，但沒有任何返回消息，走的是SMB(445,135,139)的協議，可能留下系統日誌。
 
 ```bash
 sudo ntpdate 10.129.211.241
@@ -81,7 +89,7 @@ smbclient -L //10.129.211.241 -U "guest" -N
 
 <img width="828" height="271" alt="螢幕擷取畫面 2026-04-13 205236" src="https://github.com/user-attachments/assets/4fc754a8-e95d-4ad1-8dcd-7941c71bb341" />
 
-rpcclient可匿名枚舉出使用者名稱
+rpcclient可匿名枚舉出使用者名稱，這個工具也模仿正常使用者的流量，但一般要求權限比較高，例如IPC$可讀的情況，可能rpcclient無法調出使用者SID，impacket-rpcclient卻可以，所以通常是先用rpcclient去看，如果有特殊情況rpcclient不好用的時候，再上impacket
 
 ```bash
 rpcclient -U "" 10.129.211.241 -N
@@ -109,6 +117,8 @@ nxc smb 10.129.211.241 -u username -p username --continue-on-success
 
 <img width="1654" height="279" alt="螢幕擷取畫面 2026-04-13 210250" src="https://github.com/user-attachments/assets/afba6c09-e4ab-4ac7-a043-50715e9173e8" />
 
+我無法利用使用者名單獲得密碼，所以我回頭來枚舉LDAP，LDAP是一種用於在IP網路中存取與管理「目錄服務」資料的開放標準網路協定，它最常用於企業內部的集中式身份驗證與帳號管理
+
 使用ldapsearch枚舉LDAP服務，這也是相對來說隱蔽性比較好的工具，一樣可以模仿正常使用者流量，因為訊息非常多，我將結果保存成文件後使用grep查詢
 
 ```bash
@@ -125,7 +135,7 @@ ldapsearch -x -H ldap://10.129.211.241 -b 'DC=CASCADE,DC=LOCAL' '(objectClass=pe
 
 <img width="953" height="70" alt="螢幕擷取畫面 2026-04-13 211457" src="https://github.com/user-attachments/assets/099d9006-e8c9-4e6e-b87e-90305e4fca0a" />
 
-配合grep搜尋後，我找到疑似密碼的字串
+配合grep搜尋後，我找到疑似密碼的字串，推測為歷史遺留密碼，可能未被清除。
 
 <img width="337" height="680" alt="螢幕擷取畫面 2026-04-13 211725" src="https://github.com/user-attachments/assets/a95acc60-21e8-4ded-a2f3-db92b87a7bdc" />
 
@@ -133,11 +143,18 @@ ldapsearch -x -H ldap://10.129.211.241 -b 'DC=CASCADE,DC=LOCAL' '(objectClass=pe
 
 <img width="668" height="639" alt="螢幕擷取畫面 2026-04-13 211919" src="https://github.com/user-attachments/assets/42ea0f18-455c-4929-bafb-97a0e10325dc" />
 
-base64解碼後，我獲得明文密碼
+疑似為Base64編碼，解碼後取得明文密碼。
+
+此類弱點常見於：
+1. 過時系統遷移
+2. 測試帳號未清除
+3. 自訂屬性儲存敏感資訊
 
 <img width="336" height="93" alt="螢幕擷取畫面 2026-04-13 212125" src="https://github.com/user-attachments/assets/8b7550ac-0476-419e-89cc-53939c81a6f2" />
 
 但此憑證並不能利用WinRM登入
+
+取得憑證時，一定要優先嘗試可否遠端登入，在TCP5985有開的情況下，evil-winrm肯定是第一優先要測試的，若無法登入，SMB服務可能有內部文件洩漏，也是優先度較高的
 
 <img width="1180" height="250" alt="螢幕擷取畫面 2026-04-13 212340" src="https://github.com/user-attachments/assets/5ceac52b-7536-4a44-9263-a53798ad6f12" />
 
@@ -276,7 +293,9 @@ monodis --userstrings CascAudit.exe
 
 ### 2.5 權限提升(Privilege Escalation)
 
-我檢查了當前使用者的權限和屬組，AD Recycle Bin組很顯眼，我懷疑它可以看到被刪除的物件，記得剛才有一封電子郵件提到有一使用者帳號TempAdmin被刪除，且其密碼與管理員一致，我打算去看看這個使用者可不可以挖到密碼
+我檢查了當前使用者的權限和屬組，AD Recycle Bin是2008年引入的功能，用於還原意外刪除的AD物件，通常需手動啟用，能保留被刪除物件的完整屬性。
+
+記得剛才有一封電子郵件提到有一使用者帳號TempAdmin被刪除，且其密碼與管理員一致，我打算去看看這個使用者可不可以挖到密碼
 
 <img width="639" height="754" alt="螢幕擷取畫面 2026-04-13 225558" src="https://github.com/user-attachments/assets/37f4a625-cabb-4f4a-8803-74cdb865dd80" />
 
