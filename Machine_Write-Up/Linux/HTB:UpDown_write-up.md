@@ -33,6 +33,9 @@
 ### 2.1 資訊蒐集(Reconnaissance)
 
 使用Nmap掃描開放埠
+1. 用穩定的TCP協議進行全掃描，這步需要完整性，不能有漏，最低速率要參考網速，可以先ping靶機測試
+2. 詳細訊息掃描，探測服務版本、使用默認腳本並且掃描作業系統
+3. 用漏洞腳本進行掃描
 ```bash
 sudo nmap -sT -Pn --min-rate 5000 -p- 10.129.227.227
 sudo nmap -sT -Pn -sV -sC -O -p22,80 10.129.227.227
@@ -42,7 +45,7 @@ sudo nmap --script=vuln -p22,80 10.129.227.227
 <img width="935" height="427" alt="螢幕擷取畫面 2026-02-19 183515" src="https://github.com/user-attachments/assets/c668de4e-b9f2-49c2-9b95-0c0152900b21" />
 <img width="760" height="458" alt="螢幕擷取畫面 2026-02-19 183657" src="https://github.com/user-attachments/assets/37b29448-c456-46ee-b305-0bff11a29205" />
 
-探索80主頁及/dev子目錄
+根據漏洞腳本掃描的結果，探索80主頁及/dev子目錄
 
 <img width="902" height="601" alt="螢幕擷取畫面 2026-02-19 183459" src="https://github.com/user-attachments/assets/6d86baa1-e43d-47e0-b7bb-ac3cafe47f33" />
 <img width="1080" height="617" alt="螢幕擷取畫面 2026-02-19 183851" src="https://github.com/user-attachments/assets/bd3b47f5-2999-4630-9e90-8dbdf7efe4af" />
