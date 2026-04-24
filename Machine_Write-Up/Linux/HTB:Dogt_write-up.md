@@ -94,6 +94,7 @@ git-dumper http://10.129.231.223/.git/ git_dump/
 1. 使用者名稱不同但密碼重用
 2. 資料庫專用
 3. 兔子洞
+
 通常密碼重用的可能性很高，可以先找找看使用者名稱
 
 <img width="891" height="588" alt="螢幕擷取畫面 2026-04-21 224116" src="https://github.com/user-attachments/assets/fa54992b-c460-4f86-b650-992e1d48be05" />
@@ -137,6 +138,8 @@ git-dumper http://10.129.231.223/.git/ git_dump/
 
 我檢查了zip檔的內容，就是在shell這個目錄裡的兩個文件
 
+如果內容多或比較複雜，建議直接改腳本
+
 ```bash
 zipinfo shell.zip
 ```
@@ -149,13 +152,15 @@ zipinfo shell.zip
 tar -cvf shell.tar shell
 tar -tvf shell.tar
 ```
--c (create)：建立新的歸檔檔案。
--v (verbose)：在螢幕上顯示正在處理的檔案清單，讓你了解進度。
--f (file)：指定要建立的歸檔檔案名稱（注意：-f 之後必須緊接檔名）。
--x (extract)：解開檔案。
--t (list) ：列出歸檔檔案的內容。
--z：使用gzip壓縮，副檔名通常為 .tar.gz。
--j：使用bzip2壓縮，副檔名通常為 .tar.bz2。
+常用參數：
+
+1. -c (create)：建立新的歸檔檔案。
+2. -v (verbose)：在螢幕上顯示正在處理的檔案清單，讓你了解進度。
+3. -f (file)：指定要建立的歸檔檔案名稱（注意：-f 之後必須緊接檔名）。
+4. -x (extract)：解開檔案。
+5. -t (list) ：列出歸檔檔案的內容。
+6. -z：使用gzip壓縮，副檔名通常為 .tar.gz。
+7. -j：使用bzip2壓縮，副檔名通常為 .tar.bz2。
 
 <img width="642" height="228" alt="螢幕擷取畫面 2026-04-21 231656" src="https://github.com/user-attachments/assets/480befdd-2ec2-4204-bfc7-9db996ceb041" />
 
